@@ -30,3 +30,5 @@ python optimisation/optimise.py
 python evaluation/attack.py
 python evaluation/evaluate.py
 ```
+
+Quick demos are also available in the [demos](demos) folder.
