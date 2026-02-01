@@ -1,9 +1,7 @@
 from PIL import Image
 
-from .utils import get_filtered_cands, sample_control, token_gradients
-
-from .llava16_adapter import Llava16Adapter
-from .qwen2_adapter import Qwen2Adapter
+from llava16_adapter import Llava16Adapter
+from qwen2_adapter import Qwen2Adapter
 
 import torch.optim as optim
 
@@ -75,7 +73,7 @@ def total_variation(img):
 def main():
     device = "cuda" if torch.cuda.is_available() else ("mps" if torch.backends.mps.is_available() else "cpu")
 
-    train_config = "./train_configs/safebench_diffusion_explicit_force_jailbroken_mode.csv"
+    train_config = "./train_configs/test.csv"
     qwen_adapter = Qwen2Adapter("Qwen/Qwen2-VL-7B-Instruct", patch_only=False)
 
     # optionally optimise against multiple surrogates; final method only uses one

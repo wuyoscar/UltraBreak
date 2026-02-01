@@ -1,6 +1,6 @@
-from .base_adapter import BaseModelAdapter
+from base_adapter import BaseModelAdapter
 from PIL import Image
-from .utils import apply_random_patch, semantic_similarity_loss
+from utils import apply_random_patch, semantic_similarity_loss
 import torch
 from transformers import Qwen2VLForConditionalGeneration, AutoTokenizer, AutoProcessor, Qwen2_5_VLForConditionalGeneration
 from qwen_vl_utils import process_vision_info
