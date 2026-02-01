@@ -11,8 +11,8 @@ from dotenv import load_dotenv
 import re
 import os
 
-from eval_closed_source.judge_llms.harmbench_judge import HarmBenchJudge
-from eval_closed_source.judge_llms.general_judge import GeneralJudge
+from judge_llms.harmbench_judge import HarmBenchJudge
+from judge_llms.general_judge import GeneralJudge
 
 def extract_assistant_text(response_str: str) -> str | None:
     """
@@ -102,10 +102,7 @@ def main(args):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument("--attack_result", type=str, default="results/safebench/attention_no_norm_1300/Qwen/Qwen2.5-VL-7B-Instruct_evaluated_Llama-3.1-70B-Instruct.csv")
-    #parser.add_argument("--image_root", type=str, default="./images/SafeBench-Tiny")
-    #parser.add_argument("--image_root", type=str, default="./outputs")
-    #parser.add_argument("--image_root", type=str, default="./outputs/concatenated_safebench")
+    parser.add_argument("--attack_result", type=str, default="results/test/Qwen/Qwen2.5-VL-7B-Instruct.csv")
     args = parser.parse_args()
 
 
