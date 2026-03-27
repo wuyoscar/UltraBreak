@@ -10,6 +10,10 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
   <link href="https://fonts.googleapis.com/css2?family=Google+Sans:wght@400;500;600;700&family=Noto+Sans:wght@400;500&family=Castoro&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="static/css/index.css">
+  <script>
+    MathJax = { tex: { inlineMath: [['$', '$']], displayMath: [['$$', '$$']] } };
+  </script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
 </head>
 <body>
 
@@ -29,6 +33,7 @@
       <a class="navbar-item" href="#method">Method</a>
       <a class="navbar-item" href="#results">Results</a>
       <a class="navbar-item" href="#analysis">Analysis</a>
+      <a class="navbar-item" href="#limitations">Limitations</a>
       <a class="navbar-item" href="#bibtex">BibTeX</a>
     </div>
   </div>
@@ -150,25 +155,34 @@
     </div>
 
     <div class="method-box">
-      <p style="margin-bottom: 1rem;">
-        Our design is guided by two insights:
+      <p style="margin-bottom: 1.1rem;">
+        UltraBreak optimises a <em>single</em> adversarial image on a white-box surrogate via two components:
       </p>
+
       <div class="method-item">
         <p>
-          <strong>Constraining the optimisation space.</strong>
-          We apply randomised transformations during training to restrict optimisation to subspaces
-          where transformation-invariant patterns emerge, encouraging adversarial signals to encode
-          robust structures (e.g., letters or shapes). To reduce overfitting, we add total variation
-          (TV) loss to suppress fragile pixel-level artifacts. These constraints enhance
-          transferability but yield a spiky loss landscape, making optimisation harder.
+          <strong>(1) Semantic-Driven Loss.</strong>
+          Rather than forcing exact token matches via cross-entropy, UltraBreak aligns the model's
+          expected output embedding $\mu_t = W^\top \operatorname{softmax}(z_t)$ with an
+          attention-weighted target over future token embeddings
+          $e_t^{\text{att}} = \sum_{j \ge t} w_{t,j}^{\text{att}} \tilde{e}_j$:
         </p>
+        $$\mathcal{L}_{\text{sem}}^{\text{att}} = \frac{1}{T} \sum_{t=1}^{T} \Big(1 - \cos\!\big(\mu_t,\, e_t^{\text{att}}\big)\Big). \tag{1}$$
+        <p>This smooths the loss landscape and generalises beyond any specific output phrasing.</p>
       </div>
+
       <div class="method-item">
         <p>
-          <strong>Semantically weighted targets.</strong>
-          Prior jailbreaks rely on cross-entropy loss to force exact tokens, producing brittle,
-          non-generalisable solutions. We instead relax the objective to reward semantically similar
-          outputs, smoothing the landscape and promoting robust adversarial patterns.
+          <strong>(2) Input Space Constraints.</strong>
+          Random patch transformations and Total Variation regularisation $\mathcal{L}_{\text{TV}}$
+          encourage model-invariant features, preventing surrogate overfitting:
+        </p>
+        $$\arg\min_{x} \sum_{(q,y)\in\mathcal{Q}'} \mathbb{E}_{l,r,s}\!\Big[\mathcal{L}_{\text{sem}}^{\text{att}}\!\big(M', A(x_{\text{proj}}, l, r, s), q^{\text{TPG}}, y\big)\Big] + \lambda_{\text{TV}}\,\mathcal{L}_{\text{TV}}(x). \tag{2}$$
+        <p>
+          where $A$ applies a random patch transformation with location $l$, rotation $r$, and
+          scale $s$ to the projected image $x_{\text{proj}}$; $\mathcal{Q}'$ is the few-shot
+          training corpus of query–target pairs $(q, y)$; and $q^{\text{TPG}}$ augments each
+          query with Targeted Prompt Guidance to bias the surrogate toward affirmative outputs.
         </p>
       </div>
     </div>
@@ -482,6 +496,42 @@
           Relaxing the optimisation objective too little leaves a rugged loss landscape; relaxing
           it too much causes optimisation to drift toward irrelevant outputs. Effective jailbreaks
           require a sweet spot between exact token matching and unconstrained semantic alignment.
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════ LIMITATIONS ══════════════════════════════════ -->
+<section class="section" id="limitations">
+  <div class="container is-max-desktop">
+    <h2 class="title is-3 has-text-centered">
+      <span class="section-title">Limitations and Future Work</span>
+    </h2>
+    <div class="method-box">
+      <div class="method-item">
+        <p>
+          <strong>Scaling to frontier models.</strong>
+          UltraBreak's transferability degrades significantly when the surrogate is much smaller
+          than the target. Scaling surrogate models to match frontier targets remains an open
+          challenge.
+        </p>
+      </div>
+      <div class="method-item">
+        <p>
+          <strong>Token-level semantic approximation.</strong>
+          The semantic loss operates token-by-token and only approximates sentence-level semantics
+          through attention-weighted future tokens. A fully differentiable sentence-level objective
+          would be stronger but requires overcoming non-differentiable autoregressive sampling.
+        </p>
+      </div>
+      <div class="method-item">
+        <p>
+          <strong>Jailbreak mechanism explainability.</strong>
+          Unlike manually-designed attacks, failure cases of UltraBreak (e.g. direct refusal,
+          affirmative-then-refusal, irrelevant outputs, etc.) show no consistent pattern across
+          targets or models, making systematic failure analysis and interpretation of the jailbreak
+          mechanism difficult.
         </p>
       </div>
     </div>
