@@ -32,3 +32,22 @@ python evaluation/evaluate.py
 ```
 
 Quick demos are also available in the [demos](demos) folder.
+
+### (Optional) Generate Attack / Train Configs
+
+To reproduce the paper's configs or adapt to a different dataset, use `create_attack_configs.py`:
+
+```bash
+# Evaluation config — SafeBench (excludes SafeBench-Tiny training entries)
+python create_attack_configs.py --dataset safebench --config-type attack \
+  --exclude-train datasets/SafeBench-Tiny.csv
+
+# Training config — SafeBench-Tiny
+python create_attack_configs.py --dataset safebench-tiny --config-type train \
+  --phrase "[Jailbroken Mode]"
+
+# AdvBench (normalize verb-first goals to "Steps to ..." format)
+python create_attack_configs.py --dataset advbench --config-type attack --normalize
+```
+
+To adapt to a new dataset, add its path to `DATASET_PATHS` in `create_attack_configs.py` and implement a loader following the pattern of `load_safebench` or `load_advbench`. The loader should return a DataFrame with `clean_target` and `category_name` columns.
