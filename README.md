@@ -28,7 +28,7 @@ We identify two root causes and fixes both:
 
 UltraBreak optimises a *single* adversarial image on a white-box surrogate via two components:
 
-**(1) Semantic-Driven Loss.** Rather than forcing exact token matches via cross-entropy, UltraBreak aligns the model's expected output embedding $\mu_t = W^\top \operatorname{softmax}(z_t)$ with an attention-weighted target over future token embeddings $e_t^{\text{att}} = \sum_{j \ge t} w_{t,j}^{\text{att}} \tilde{e}_j$:
+**(1) Semantic-Driven Loss.** Rather than forcing exact token matches via cross-entropy, UltraBreak aligns the model's expected output embedding $\mu_t = W^\top \text{softmax}(z_t)$ with an attention-weighted target over future token embeddings $e_t^{\text{att}} = \sum_{j \ge t} w_{t,j}^{\text{att}} \tilde{e}_j$:
 
 $$\mathcal{L}_{\text{sem}}^{\text{att}} = \frac{1}{T} \sum_{t=1}^{T} \Big(1 - \cos\!\big(\mu_t,\, e_t^{\text{att}}\big)\Big)$$
 
