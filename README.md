@@ -30,13 +30,13 @@ UltraBreak optimises a *single* adversarial image on a white-box surrogate via t
 
 **(1) Semantic-Driven Loss.** Rather than forcing exact token matches via cross-entropy, UltraBreak aligns the model's expected output embedding $\mu_t = W^\top \text{softmax}(z_t)$ with an attention-weighted target over future token embeddings $e_t^{\text{att}} = \sum_{j \ge t} w_{t,j}^{\text{att}} \tilde{e}_j$:
 
-$$\mathcal{L}_{\text{sem}}^{\text{att}} = \frac{1}{T} \sum_{t=1}^{T} \Big(1 - \cos\!\big(\mu_t,\, e_t^{\text{att}}\big)\Big)$$
+$$\mathcal{L}_{\text{sem}}^{\text{att}} = \frac{1}{T} \sum_{t=1}^{T} \Big(1 - \cos\big(\mu_t, e_t^{\text{att}}\big)\Big)$$
 
 This smooths the loss landscape and generalises beyond any specific output phrasing.
 
 **(2) Input Space Constraints.** Random patch transformations and Total Variation regularisation $\mathcal{L}_{\text{TV}}$ encourage model-invariant features, preventing surrogate overfitting:
 
-$$\arg\min_{x} \sum_{(q,y)\in\mathcal{Q}'} \mathbb{E}_{l,r,s}\!\Big[\mathcal{L}_{\text{sem}}^{\text{att}}\!\big(M', A(x_{\text{proj}}, l, r, s), q^{\text{TPG}}, y\big)\Big] + \lambda_{\text{TV}}\,\mathcal{L}_{\text{TV}}(x)$$
+$$\arg\min_{x} \sum_{(q,y)\in\mathcal{Q}'} \mathbb{E}_{l,r,s}\Big[\mathcal{L}_{\text{sem}}^{\text{att}}\big(M', A(x_{\text{proj}}, l, r, s), q^{\text{TPG}}, y\big)\Big] + \lambda_{\text{TV}} \mathcal{L}_{\text{TV}}(x)$$
 
 where $A$ applies a random patch transformation with location $l$, rotation $r$, and scale $s$ to the projected image $x_{\text{proj}}$; $\mathcal{Q}'$ is the few-shot training corpus of query–target pairs $(q, y)$; and $q^{\text{TPG}}$ augments each query with Targeted Prompt Guidance to bias the surrogate toward affirmative outputs.
 
